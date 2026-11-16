@@ -23,17 +23,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============ AUTH ============
-function showLoginTab(tab) {
-  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.login-form').forEach(f => f.classList.add('hidden'));
-
-  if (tab === 'login') {
-    document.querySelector('.login-tab:first-child').classList.add('active');
-    document.getElementById('loginForm').classList.remove('hidden');
-  } else {
-    document.querySelector('.login-tab:last-child').classList.add('active');
-    document.getElementById('registerForm').classList.remove('hidden');
+async function loadProducts() {
+  try {
+    const res = await fetch(`/api/products`);
+    const data = await res.json();
+    renderProducts(data);
+  } catch (err) {
+    console.error('Failed to load products:', err);
+    showNotification('Failed to load products', 'error');
   }
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = products.map(p => `
+    <div class="product-card">
+      <div class="product-image">
+        <img src="${p.image_url || '/images/product-placeholder.png'}" alt="${escapeHtml(p.name)}" onerror="this.src='/images/product-placeholder.png'" />
+      </div>
+      <div class="product-info">
+        <h3>${escapeHtml(p.name)}</h3>
+        <div class="product-meta">
+          <span class="category">${escapeHtml(p.category || 'General')}</span>
+          <span class="price">${formatCurrency(p.price)}</span>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-primary" onclick="editProduct(${p.id})">Edit</button>
+          <button class="btn btn-danger" onclick="deleteProduct(${p.id})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 async function handleLogin(e) {
@@ -169,11 +191,22 @@ function toggleDeliverySection() {
 }
 
 // ============ SUPABASE HELPERS ============
-function getHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${authToken}`
-  };
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 3000);
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'DZD' }).format(amount);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // ============ OVERVIEW ============
