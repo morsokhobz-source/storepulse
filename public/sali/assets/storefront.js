@@ -1,6 +1,6 @@
 // Boutique SALI Storefront — connected to StorePulse or fallback to local data
 // Uses current origin so it works both locally and through tunnels/domains
-const STOREFRONT_API = window.location.origin + '/api/storefront/sali';
+const STOREFRONT_API = "https://storepulse-gi6e.onrender.com/api/storefront/sali";
 const STOREFRONT_KEY = 'sp_c2FsaTE3OTM3ODU1NzY3NzE';
 
 // Fallback product data for offline use
