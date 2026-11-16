@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StorePulse — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="loginPage" class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <h1>StorePulse</h1>
+          <p class="login-tagline">Your store. Your pulse. Your data.</p>
+        </div>
+        <div class="login-tabs">
+          <button class="login-tab active" onclick="showLoginTab('login')">Sign In</button>
+          <button class="login-tab" onclick="showLoginTab('register')">Create Store</button>
+        </div>
+        <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="loginSlug">Store Slug</label>
+            <input type="text" id="loginSlug" placeholder="e.g. sali" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your store password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+        </form>
+        <form id="registerForm" class="login-form hidden" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="regName">Store Name</label>
+            <input type="text" id="regName" placeholder="e.g. Boutique SALI" required>
+          </div>
+          <div class="form-group">
+            <label for="regSlug">Store Slug</label>
+            <input type="text" id="regSlug" placeholder="e.g. sali" required>
+            <small class="form-hint">This will be your dashboard URL: /sali</small>
+          </div>
+          <div class="form-group">
+            <label for="regPassword">Password</label>
+            <input type="password" id="regPassword" placeholder="Create a password" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Create Store</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>StorePulse</h2>
+        <button class="sidebar-close" onclick="logout()">Sign Out</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="overview">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Overview</span>
+        </a>
+        <a href="#" class="nav-item" data-page="orders">
+          <span class="nav-icon">📦</span>
+          <span class="nav-label">Orders</span>
+        </a>
+        <a href="#" class="nav-item" data-page="products">
+          <span class="nav-icon">👕</span>
+          <span class="nav-label">Products</span>
+        </a>
+        <a href="#" class="nav-item" data-page="customers">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Customers</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <!-- Delivery Section -->
+        <div class="nav-section-header" onclick="toggleDeliverySection()">
+          <span>🚚 Delivery</span>
+          <span class="nav-chevron" id="deliveryChevron">▶</span>
+        </div>
+        <div id="deliverySection" class="nav-subsection">
+          <a href="#" class="nav-item nav-sub-item" data-page="delivery-shipments">
+            <span class="nav-icon">📦</span>
+            <span class="nav-label">Shipments</span>
+          </a>
+          <a href="#" class="nav-item nav-sub-item" data-page="delivery-companies">
+            <span class="nav-icon">🏢</span>
+            <span class="nav-label">Delivery Companies</span>
+          </a>
+          <a href="#" class="nav-item nav-sub-item" data-page="delivery-tracking">
+            <span class="nav-icon">📍</span>
+            <span class="nav-label">Tracking</span>
+          </a>
+          <a href="#" class="nav-item nav-sub-item" data-page="delivery-settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Delivery Settings</span>
+          </a>
+          <a href="#" class="nav-item nav-sub-item" data-page="delivery-rates">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">Shipping Rates</span>
+          </a>
+          </div>
+
+          <div class="nav-divider"></div>
+
+          <a href="#" class="nav-item" data-page="customers">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Customers</span>
+          </a>
+          <a href="#" class="nav-item" data-page="analytics">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Analytics</span>
+          </a>
+          <a href="#" class="nav-item" data-page="whatsapp">
+          <span class="nav-icon">💬</span>
+          <span class="nav-label">WhatsApp</span>
+          </a>
+          </nav>
+      <div class="sidebar-footer">
+        <div class="store-info">
+          <span id="storeNameDisplay">Store</span>
+          <small id="storeSlugDisplay">@slug</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Overview Page -->
+      <div id="page-overview" class="page active">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+          <div class="page-actions">
+            <button class="btn btn-sm btn-secondary" onclick="showZimamLog()">Zimam Log</button>
+            <button class="btn btn-sm btn-secondary" onclick="simulateZimamWebhook()">Simulate Webhook</button>
+            <span class="live-indicator"><span class="live-dot"></span> Live</span>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Today's Sales</div>
+            <div class="stat-value" id="statTodaySales">0 DZD</div>
+            <div class="stat-delta" id="statTodaySalesDelta"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">This Week</div>
+            <div class="stat-value" id="statWeekSales">0 DZD</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Today's Orders</div>
+            <div class="stat-value" id="statTodayOrders">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Calls</div>
+            <div class="stat-value" id="statPending">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Out for Delivery</div>
+            <div class="stat-value" id="statOutForDelivery">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Delivered</div>
+            <div class="stat-value" id="statDelivered">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Order Value</div>
+            <div class="stat-value" id="statAOV">0 DZD</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Live Visitors</div>
+            <div class="stat-value" id="statVisitors">0</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2>Sales Trend — Last 7 Days</h2>
+            </div>
+            <canvas id="salesChart"></canvas>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Conversion Funnel</h2>
+            </div>
+            <div class="funnel" id="conversionFunnel">
+              <!-- Funnel bars rendered by JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Order Status</h2>
+            </div>
+            <canvas id="statusDonut"></canvas>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Top Customers</h2>
+            </div>
+            <div id="topCustomersList">
+              <p class="empty-state">No customer data yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Page -->
+      <div id="page-orders" class="page">
+        <div class="page-header">
+          <h1>Orders</h1>
+          <button class="btn btn-primary" onclick="openNewOrderModal()">+ New Order</button>
+        </div>
+        <div class="filters-bar">
+          <input type="text" id="orderSearch" placeholder="Search orders..." oninput="loadOrders()">
+          <select id="orderStatusFilter" onchange="loadOrders()">
+            <option value="all">All Statuses</option>
+            <option value="Pending Call">Pending Call</option>
+            <option value="Confirmed by Phone">Confirmed by Phone</option>
+            <option value="Sent to Delivery">Sent to Delivery</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Returned">Returned</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Wilaya</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Tracking</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="8" class="empty-row">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Products Page -->
+      <div id="page-products" class="page">
+        <div class="page-header">
+          <h1>Products</h1>
+          <button class="btn btn-primary" onclick="openNewProductModal()">+ Add Product</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr><td colspan="6" class="empty-row">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Customers Page -->
+      <div id="page-customers" class="page">
+        <div class="page-header">
+          <h1>Customers</h1>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Wilaya</th>
+                <th>Orders</th>
+                <th>Total Spend</th>
+                <th>Last Order</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody">
+              <tr><td colspan="6" class="empty-row">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Delivery: Shipments -->
+      <div id="page-delivery-shipments" class="page">
+        <div class="page-header">
+          <h1>Shipments</h1>
+          <button class="btn btn-primary" onclick="openNewShipmentModal()">+ Create Shipment</button>
+        </div>
+        <div class="filters-bar">
+          <select id="shipmentStatusFilter" onchange="loadShipments()">
+            <option value="all">All Statuses</option>
+            <option value="Prepared">Prepared</option>
+            <option value="Picked up by Courier">Picked up by Courier</option>
+            <option value="Out for delivery">Out for delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Returned">Returned</option>
+          </select>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tracking</th>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Company</th>
+                <th>Fee</th>
+                <th>COD</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="shipmentsTableBody">
+              <tr><td colspan="8" class="empty-row">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Delivery: Companies -->
+      <div id="page-delivery-companies" class="page">
+        <div class="page-header">
+          <h1>Delivery Companies</h1>
+          <button class="btn btn-primary" onclick="openCompanyModal()">+ Add Company</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>API URL</th>
+                <th>Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="companiesTableBody">
+              <tr><td colspan="5" class="empty-row">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Delivery: Tracking -->
+      <div id="page-delivery-tracking" class="page">
+        <div class="page-header">
+          <h1>Tracking</h1>
+        </div>
+        <div class="card">
+          <div class="search-box">
+            <input type="text" id="trackingSearch" placeholder="Enter tracking number...">
+            <button class="btn btn-primary" onclick="searchTracking()">Track</button>
+          </div>
+          <div id="trackingResult" class="tracking-result hidden">
+            <!-- Tracking result rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery: Settings -->
+      <div id="page-delivery-settings" class="page">
+        <div class="page-header">
+          <h1>Delivery Settings</h1>
+        </div>
+        <div class="card">
+          <div class="form-group">
+            <label for="settingsCompany">Select Company</label>
+            <select id="settingsCompany" onchange="loadDeliveryRates()">
+              <option value="">-- Select a company --</option>
+            </select>
+          </div>
+          <div class="rates-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Wilaya</th>
+                  <th>Commune</th>
+                  <th>Home Delivery</th>
+                  <th>Stop Desk</th>
+                </tr>
+              </thead>
+              <tbody id="ratesTableBody">
+                <tr><td colspan="4" class="empty-row">Select a company to view rates</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery: Shipping Rates -->
+      <div id="page-delivery-rates" class="page">
+        <div class="page-header">
+          <h1>Shipping Rates</h1>
+          <button class="btn btn-primary" onclick="openRateModal()">+ Add Rate</button>
+        </div>
+        <div class="card">
+          <div class="form-group">
+            <label for="rateCompany">Select Company</label>
+            <select id="rateCompany" onchange="loadRates()">
+              <option value="">-- Select a company --</option>
+            </select>
+          </div>
+          <div class="rates-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Wilaya</th>
+                  <th>Commune</th>
+                  <th>Home Delivery</th>
+                  <th>Stop Desk</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ratesPageTableBody">
+                <tr><td colspan="5" class="empty-row">Select a company to view rates</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics: LTV / RFM -->
+      <div id="page-analytics" class="page">
+        <div class="page-header">
+          <h1>Analytics</h1>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Customer Segments (LTV)</h2>
+            </div>
+            <div class="segment-legend" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;font-size:0.875rem;">
+              <span><span class="status-badge status-delivered" style="margin-right:0.25rem;">VIP</span> Spend ≥ 50,000 DZD</span>
+              <span><span class="status-badge status-pending" style="margin-right:0.25rem;">Active</span> Ordered in last 30 days</span>
+              <span><span class="status-badge status-confirmed" style="margin-right:0.25rem;">Warm</span> Ordered in last 90 days</span>
+              <span><span class="status-badge status-outfordelivery" style="margin-right:0.25rem;">Cold</span> Ordered 90+ days ago</span>
+              <span><span class="status-badge status-cancelled" style="margin-right:0.25rem;">New</span> No repeat orders</span>
+            </div>
+            <div id="ltvTableContainer">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Orders</th>
+                    <th>Total Spend</th>
+                    <th>Avg Order</th>
+                    <th>Last Order</th>
+                    <th>Segment</th>
+                  </tr>
+                </thead>
+                <tbody id="ltvTableBody">
+                  <tr><td colspan="7" class="empty-row">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>RFM Segmentation</h2>
+            </div>
+            <div class="segment-legend" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;font-size:0.875rem;">
+              <span><span class="status-badge status-delivered">Champions</span> R+F+M high</span>
+              <span><span class="status-badge status-confirmed">Loyal</span> Regular buyers</span>
+              <span><span class="status-badge status-pending">Potential</span> Growing</span>
+              <span><span class="status-badge status-outfordelivery">At Risk</span> Declining</span>
+              <span><span class="status-badge status-cancelled">Low Value</span> New / low activity</span>
+            </div>
+            <div id="rfmTableContainer">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Recency</th>
+                    <th>Frequency</th>
+                    <th>Monetary</th>
+                    <th>RFM</th>
+                    <th>Segment</th>
+                  </tr>
+                </thead>
+                <tbody id="rfmTableBody">
+                  <tr><td colspan="6" class="empty-row">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div id="page-whatsapp" class="page">
+        <div class="page-header">
+          <h1>WhatsApp Integration</h1>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Store WhatsApp Number</h2>
+            </div>
+            <div class="form-group">
+              <label for="storeWhatsappNumber">WhatsApp Business Number (with country code)</label>
+              <input type="tel" id="storeWhatsappNumber" placeholder="e.g. 213557001748" style="width:100%;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+              <small style="color:var(--text-muted);margin-top:0.5rem;display:block;">Include country code without +. Used as sender identity.</small>
+            </div>
+            <button class="btn btn-primary" onclick="saveWhatsAppSettings()">Save Settings</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Quick Message Templates</h2>
+            </div>
+            <div id="whatsappTemplates">
+              <div class="template-item">
+                <h4>Order Confirmation</h4>
+                <textarea id="tplOrderConfirm" rows="4" placeholder="Bonjour {name}, votre commande {order} a été reçue...">Bonjour {name}, votre commande {order} chez {store} a été reçue. Montant: {amount} DZD. Articles: {items}. Mode de livraison: {delivery}. Nous vous contacterons bientôt pour confirmer.</textarea>
+                <button class="btn btn-sm btn-secondary" onclick="useTemplate('orderConfirm')">Use</button>
+              </div>
+              <div class="template-item" style="margin-top:1rem;">
+                <h4>Shipped / Out for Delivery</h4>
+                <textarea id="tplShipped" rows="4" placeholder="Bonjour {name}, votre commande {order} est en cours de livraison...">Bonjour {name}, votre commande {order} est en cours de livraison avec {company}. Numéro de suivi: {tracking}. Livraison estimée: aujourd'hui.</textarea>
+                <button class="btn btn-sm btn-secondary" onclick="useTemplate('shipped')">Use</button>
+              </div>
+              <div class="template-item" style="margin-top:1rem;">
+                <h4>Delivered</h4>
+                <textarea id="tplDelivered" rows="4" placeholder="Bonjour {name}, votre commande {order} a été livrée...">Bonjour {name}, votre commande {order} a été livrée avec succès. Merci pour votre confiance !</textarea>
+                <button class="btn btn-sm btn-secondary" onclick="useTemplate('delivered')">Use</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Send Custom Message</h2>
+            </div>
+            <div class="form-group">
+              <label>Customer Phone</label>
+              <input type="tel" id="waPhone" placeholder="0551 23 45 67">
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="waMessage" rows="6" placeholder="Write your message..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendWhatsApp()">Send WhatsApp</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Modal content injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Zimam Log Modal -->
+  <div id="zimamLogModal" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width: 600px; width: 90%;">
+      <div class="modal-header">
+        <h3>Zimam Automation Log</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="zimamLogContent" style="max-height: 60vh; overflow-y: auto;">
+          <p style="color:var(--text-muted);">No automation events yet. Create an order to start.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

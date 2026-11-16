@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — Boutique SALI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1C1917;
+      --on-primary: #FFFFFF;
+      --secondary: #44403C;
+      --accent: #A16207;
+      --on-accent: #FFFFFF;
+      --background: #FAFAF9;
+      --foreground: #0C0A09;
+      --card: #FFFFFF;
+      --card-foreground: #0C0A09;
+      --muted: #E8ECF0;
+      --muted-foreground: #475569;
+      --border: #D6D3D1;
+      --destructive: #DC2626;
+      --ring: #1C1917;
+      --cta: #A16207;
+      --on-cta: #FFFFFF;
+      --font-heading: 'Cormorant', serif;
+      --font-body: 'Montserrat', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      padding: 3rem 2rem 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--muted-foreground);
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--foreground);
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
+    .product-card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #E8ECF0 0%, #D6D3D1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      color: var(--muted-foreground);
+    }
+
+    .product-info {
+      padding: 1.25rem;
+    }
+
+    .product-category {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .product-name {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1.0625rem;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      flex: 1;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add {
+      background: var(--cta);
+      color: var(--on-cta);
+    }
+
+    .btn-add:hover {
+      background: #8B5A2B;
+    }
+
+    .btn-view {
+      background: var(--muted);
+      color: var(--primary);
+    }
+
+    .btn-view:hover {
+      background: var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted-foreground);
+    }
+
+    .empty-state h3 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="logo">Boutique SALI</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="page-header">
+    <h1>Shop All</h1>
+    <p>Browse our complete collection of women's fashion.</p>
+  </div>
+
+  <div class="container">
+    <div class="filters">
+      <select class="filter-select" id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="tops">Tops</option>
+        <option value="dresses">Dresses</option>
+        <option value="outerwear">Outerwear</option>
+        <option value="accessories">Accessories</option>
+        <option value="bottoms">Bottoms</option>
+        <option value="shoes">Shoes</option>
+      </select>
+      <select class="filter-select" id="sortFilter">
+        <option value="popular">Sort by: Popular</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <p class="empty-state">Loading products...</p>
+    </div>
+
+  </div>
+
+  <script src="assets/storefront.js"></script>
+</body>
+</html></div>
+  </div>
+
+  <script>
+    const products = Array.from(document.querySelectorAll('.product-card'));
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const grid = document.getElementById('productsGrid');
+    const empty = document.getElementById('emptyState');
+
+    function applyFilters() {
+      const cat = categoryFilter.value.toLowerCase();
+      const sort = sortFilter.value;
+
+      let filtered = products.filter(p => {
+        if (!cat) return true;
+        return p.dataset.category === cat;
+      });
+
+      filtered.sort((a, b) => {
+        if (sort === 'price-asc') return Number(a.dataset.price) - Number(b.dataset.price);
+        if (sort === 'price-desc') return Number(b.dataset.price) - Number(a.dataset.price);
+        if (sort === 'newest') return 0;
+        return Number(b.dataset.popularity) - Number(a.dataset.popularity);
+      });
+
+      grid.innerHTML = '';
+      filtered.forEach(p => grid.appendChild(p));
+
+      empty.style.display = filtered.length === 0 ? 'block' : 'none';
+    }
+
+    categoryFilter.addEventListener('change', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+  </script>
+</body>
+</html>

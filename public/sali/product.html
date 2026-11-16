@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silk Blend Blouse — Boutique SALI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1C1917;
+      --on-primary: #FFFFFF;
+      --secondary: #44403C;
+      --accent: #A16207;
+      --on-accent: #FFFFFF;
+      --background: #FAFAF9;
+      --foreground: #0C0A09;
+      --card: #FFFFFF;
+      --card-foreground: #0C0A09;
+      --muted: #E8ECF0;
+      --muted-foreground: #475569;
+      --border: #D6D3D1;
+      --destructive: #DC2626;
+      --ring: #1C1917;
+      --cta: #A16207;
+      --on-cta: #FFFFFF;
+      --font-heading: 'Cormorant', serif;
+      --font-body: 'Montserrat', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb a {
+      color: var(--accent);
+    }
+
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .product-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .product-main-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #E8ECF0 0%, #D6D3D1 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--muted-foreground);
+    }
+
+    .product-thumbnails {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 100px;
+      background: linear-gradient(135deg, #E8ECF0 0%, #D6D3D1 100%);
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+      border-color: var(--accent);
+    }
+
+    .product-info h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .product-meta {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-category {
+      background: rgba(161, 98, 7, 0.1);
+      color: var(--accent);
+    }
+
+    .badge-stock {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .badge-stock.low {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .product-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .product-description {
+      color: var(--muted-foreground);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .options-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .options-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+    }
+
+    .size-options {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .size-btn {
+      padding: 0.75rem 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .size-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .size-btn.selected {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+
+    .color-options {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .color-btn:hover,
+    .color-btn.selected {
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .add-to-cart {
+      width: 100%;
+      padding: 1.125rem;
+      background: var(--cta);
+      color: var(--on-cta);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .add-to-cart:hover {
+      background: #8B5A2B;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(161, 98, 7, 0.2);
+    }
+
+    .related-section {
+      margin-top: 6rem;
+    }
+
+    .related-section h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .product-detail {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="logo">Boutique SALI</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / Silk Blend Blouse
+    </div>
+
+    <div class="product-detail">
+      <div class="product-gallery">
+        <div class="product-main-image">Silk Blend Blouse</div>
+        <div class="product-thumbnails">
+          <div class="thumbnail active"></div>
+          <div class="thumbnail"></div>
+          <div class="thumbnail"></div>
+          <div class="thumbnail"></div>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <div class="product-meta">
+          <span class="badge badge-category">Tops</span>
+          <span class="badge badge-stock">In Stock</span>
+        </div>
+        <h1>Silk Blend Blouse</h1>
+        <div class="product-price">4,200 DZD</div>
+        <p class="product-description">
+          A luxurious silk blend blouse that drapes beautifully and feels light against the skin. 
+          Perfect for both office and evening occasions, this piece pairs effortlessly with skirts, 
+          trousers, or jeans. Made with premium fabric for lasting comfort and elegance.
+        </p>
+
+        <div class="options-group">
+          <label>Size</label>
+          <div class="size-options">
+            <button class="size-btn">S</button>
+            <button class="size-btn selected">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn">XL</button>
+          </div>
+        </div>
+
+        <div class="options-group">
+          <label>Color</label>
+          <div class="color-options">
+            <button class="color-btn selected" style="background: #FAFAF9;" title="Ivory"></button>
+            <button class="color-btn" style="background: #1C1917;" title="Black"></button>
+            <button class="color-btn" style="background: #A16207;" title="Gold"></button>
+          </div>
+        </div>
+
+        <form id="orderForm" class="order-form">
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="orderName" required>
+          </div>
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" id="orderPhone" required>
+          </div>
+          <div class="form-group">
+            <label>Wilaya</label>
+            <input type="text" id="orderWilaya">
+          </div>
+          <div class="form-group">
+            <label>Commune</label>
+            <input type="text" id="orderCommune">
+          </div>
+          <div class="form-group">
+            <label>Delivery</label>
+            <select id="orderDelivery">
+              <option>Home Delivery</option>
+              <option>Stop Desk</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:none;">
+            <input type="hidden" id="orderItems">
+            <input type="hidden" id="orderAmount">
+          </div>
+          <button type="submit" class="add-to-cart">Place Order</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="related-section">
+      <h2>You May Also Like</h2>
+      <div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem;">
+        <div class="product-card">
+          <div class="product-image">Pleated Skirt</div>
+          <div class="product-info">
+            <div class="product-category">Bottoms</div>
+            <div class="product-name">Pleated Midi Skirt</div>
+            <div class="product-price">3,500 DZD</div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-image">Leather Bag</div>
+          <div class="product-info">
+            <div class="product-category">Accessories</div>
+            <div class="product-name">Classic Leather Tote</div>
+            <div class="product-price">9,600 DZD</div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-image">Heeled Sandals</div>
+          <div class="product-info">
+            <div class="product-category">Shoes</div>
+            <div class="product-name">Gold Heeled Sandals</div>
+            <div class="product-price">7,200 DZD</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/storefront.js"></script>
+</body>
+</html>
