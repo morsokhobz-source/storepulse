@@ -190,6 +190,29 @@ try {
   // column already exists
 }
 
+// Auto-seed SALI store and products if missing
+const saliStore = db.prepare('SELECT * FROM stores WHERE slug = ?').get('sali');
+if (!saliStore) {
+  const passwordHash = bcrypt.hashSync('sali123', 10);
+  const apiKey = 'sp_c2FsaTE3OTM3ODU1NzY3NzE';
+  const result = db.prepare('INSERT INTO stores (name, slug, password_hash, api_key, whatsapp_number) VALUES (?, ?, ?, ?, ?)').run('Boutique SALI', 'sali', passwordHash, apiKey, '0557 00 17 48');
+  const storeId = result.lastInsertRowid;
+
+  const sampleProducts = [
+    { name: 'Silk Blend Blouse', sku: 'SALI-TOP-001', price: 4200, stock: 25, category: 'Tops' },
+    { name: 'Evening Elegance Dress', sku: 'SALI-DR-001', price: 12500, stock: 15, category: 'Dresses' },
+    { name: 'Cashmere Wrap Coat', sku: 'SALI-OUT-001', price: 18900, stock: 8, category: 'Outerwear' },
+    { name: 'Classic Leather Tote', sku: 'SALI-ACC-001', price: 9600, stock: 20, category: 'Accessories' },
+    { name: 'Pleated Midi Skirt', sku: 'SALI-BOT-001', price: 3500, stock: 30, category: 'Bottoms' },
+    { name: 'Premium Leather Heels', sku: 'SALI-SHOE-001', price: 8900, stock: 12, category: 'Shoes' }
+  ];
+
+  const insertProduct = db.prepare('INSERT INTO products (store_id, name, sku, price, stock, category) VALUES (?, ?, ?, ?, ?, ?)');
+  for (const p of sampleProducts) {
+    insertProduct.run(storeId, p.name, p.sku, p.price, p.stock, p.category);
+  }
+}
+
 // Auth middleware
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
